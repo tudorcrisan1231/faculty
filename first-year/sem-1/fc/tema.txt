@@ -1,0 +1,59 @@
+module exercitiu(
+	input[7:0] a,b;
+	input[15:0] c,
+	input comp_n,minmax_en,sel_ab,sel_c,sel_minmax,
+	output reg comp_out,
+	output reg[7:0] minmax_out,
+	output reg[2:0] sum_out,
+	output reg[15:0] xor_out
+);
+reg[3:0] contor;
+reg[15:0] x;
+reg[7:0] y;
+reg[7:0] z;
+
+initial begin  //punctul b
+	comp_out = '1;  //le pun pe 1 bit
+	minmax_out = '1;
+	sum_out = '1;
+	xor_out = '1;
+end
+
+always @(comp_en, minmax_en) begin //punctul a
+	if(comp_en == 1) begin
+		if(a>b)
+			comp_out=0;
+		else if(a<b)
+			comp_out=1;
+		else
+			comp_out = ~comp_out;
+	end
+	
+	if(minmax_en==1) begin
+		if(sel_ab==0 && sel_c==0 && sel_minmax==0)
+			if(a<c[7:0])
+				minmax_out = a;
+			else
+				minmax_out = c[7:0];
+	end
+
+	sum_out = '0;
+	for(contor=0;contor<8;contor=contor+1) begin
+		if(contor%2==0)
+			sum_out = sum_out + a[contor];
+		else
+			sum_out = sum_out + b[contor];
+	end
+
+	xor_out = '0;
+	z = a|b;
+	y = a%b;
+	
+	//concatenare y si z;
+	x[15:8] = z;
+	x[7:0] = y;  
+	
+	xor_out = c ^ x;
+end
+
+endmodule
